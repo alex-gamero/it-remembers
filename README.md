@@ -4,8 +4,6 @@
 
 Most game bosses follow the same pattern every time. Learn it once and the fight is over. This one is different. Every time you die and try again, the boss remembers how you played and changes how it fights you. If you always dodge left, it starts attacking the left.
 
-> "You always run left. Not this time."
-
 ## How it works
 
 1. **You fight.** The game records what you do: which way you dodge, how close you stay, when you attack.
@@ -43,6 +41,6 @@ Early development. Art and core gameplay come first.
 ## Team
 
 - **Alex Gamero** ([@alex-gamero](https://github.com/alex-gamero))
-- **Helena Porras**
+- **Helena Porras** ([@helenaporras940-crypto](https://github.com/helenaporras940-crypto))
 
 Built as the final project for CST8400, Analysis and Design using Emerging Technologies, at Algonquin College.
