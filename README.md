@@ -26,16 +26,56 @@ Every player fights their own boss. The model lives in your browser, so no two f
 
 The Gemini API key never ships with the game. It stays in a small serverless function. If Gemini is busy or hits a limit, the boss falls back to lines we wrote ourselves, so the game never breaks.
 
+## Play it locally
+
+You need [Node.js](https://nodejs.org) (the LTS version).
+
+```bash
+npm install     # only the first time
+npm run dev     # opens the game at http://localhost:5173
+```
+
+Save a file and the game reloads by itself.
+
+To make the version that goes on itch.io, run `npm run build` and zip what's inside the `dist` folder.
+
+## Controls
+
+| Action | Keys |
+|---|---|
+| Move | WASD or arrow keys |
+| Aim | Mouse |
+| Shoot | Left click (hold it) |
+| Dash | Space, Shift or right click |
+| Try again | R |
+
+You can't be hit while dashing.
+
+## Where things are
+
+| File | What it does |
+|---|---|
+| `src/config.js` | Every number you might want to tweak: speeds, health, timings |
+| `src/scenes/Game.js` | The fight: room, bullets, hits, camera |
+| `src/scenes/Hud.js` | Hearts, boss bar, messages |
+| `src/entities/Player.js` | Moving, dashing, shooting |
+| `src/entities/Boss.js` | Boss movement, attacks, both phases |
+| `src/systems/Recorder.js` | Saves how you play in the browser |
+| `src/systems/Predictor.js` | Guesses your next dash. The TensorFlow.js model goes here |
+| `src/lines.js` | Boss lines for when Gemini isn't available |
+| `tools/make_sprites.py` | Draws every sprite. Run it again after changing a color or shape |
+
+To wipe what the boss remembers, open the browser console and type `forgetEverything()`.
+
 ## Status
 
-Early development. Art and core gameplay come first.
-
-- [ ] Art direction and boss design
-- [ ] Player movement and boss fight
-- [ ] Recording player moves
-- [ ] Prediction model
-- [ ] Boss dialogue with Gemini + fallback lines
+- [x] Art direction and boss design
+- [x] Player movement and boss fight
+- [x] Recording player moves
+- [ ] Prediction model (right now the boss just counts your dashes)
+- [ ] Boss dialogue with Gemini (right now it uses the fallback lines)
 - [ ] Upgrade cards
+- [ ] Touch controls for phones
 - [ ] Publish on itch.io
 
 ## Team

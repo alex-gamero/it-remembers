@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <title>It Remembers</title>
+    <style>
+      @font-face {
+        font-family: 'Press Start 2P';
+        src: url('/fonts/PressStart2P-Regular.ttf') format('truetype');
+      }
+      @font-face {
+        font-family: 'Silkscreen';
+        src: url('/fonts/Silkscreen-Regular.ttf') format('truetype');
+      }
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: #000;
+        overflow: hidden;
+      }
+      #game {
+        width: 100vw;
+        height: 100vh;
+        cursor: crosshair;
+      }
+      canvas {
+        image-rendering: pixelated;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
