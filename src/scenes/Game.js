@@ -138,7 +138,7 @@ export default class Game extends Phaser.Scene {
     if (!bullet) return;
     bullet.enableBody(true, from.x, from.y, true, true);
     bullet.setScale(this.playerStats.bulletScale);
-    bullet.body.setSize(5, 5);
+    bullet.body.setSize(4, 4);
     bullet.setRotation(angle).setDepth(3000).setBlendMode(Phaser.BlendModes.ADD);
     bullet.damage = this.playerStats.damage;
     this.physics.velocityFromRotation(angle, PLAYER.bulletSpeed, bullet.body.velocity);

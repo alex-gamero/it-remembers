@@ -269,96 +269,79 @@ def make_glow():
 
 
 # ---------------------------------------------------------------- player
-# The player is a being of light: a white figure with no face.
-PLAYER_FRAME_W, PLAYER_FRAME_H = 16, 20
+# The player is a small being of light: white, pale blue shading, no face.
+PLAYER_FRAME_W, PLAYER_FRAME_H = 16, 16
 LIGHT = {
+    "O": (18, 24, 38, 255),      # dark outline so it reads like the rest of the pixel art
     "W": (255, 255, 255, 255),
-    "L": (196, 232, 255, 255),   # pale blue edge light
-    "F": (150, 205, 255, 150),   # faint trailing light
+    "L": (196, 232, 255, 255),   # pale blue shading
+    "S": (132, 186, 230, 255),   # deeper blue shading
+    "F": (150, 205, 255, 140),   # faint trail of light
 }
-PLAYER_HEAD = [
-    ".....LWWL.....",
-    "....LWWWWL....",
-    "....WWWWWW....",
-    "....LWWWWL....",
-    ".....LWWL.....",
-    "......WW......",
+PLAYER_TOP = [
+    "....OOOO....",
+    "..OOWWWWOO..",
+    ".OWWWWWWWLO.",
+    ".OWWWWWWWLO.",
+    ".OWWWWWWWLO.",
+    ".OLWWWWWLLO.",
+    "..OOLLLLOO..",
+    "..OWWWWWLO..",
+    ".OWLWWWWLSO.",
+    ".OSOWWWWOSO.",
+    "..OOWWWLOO..",
 ]
-ARMS_DOWN = [
-    "...LWWWWWWL...",
-    "..LW.WWWW.WL..",
-    "..W..WWWW..W..",
-    "..L..WWWW..L..",
-    ".....WWWW.....",
-    ".....LWWL.....",
-]
-ARMS_SWING_A = [
-    "...LWWWWWWL...",
-    "..WW.WWWW.WL..",
-    ".LW..WWWW..W..",
-    ".....WWWW..L..",
-    ".....WWWW.....",
-    ".....LWWL.....",
-]
-ARMS_SWING_B = [
-    "...LWWWWWWL...",
-    "..LW.WWWW.WW..",
-    "..W..WWWW..WL.",
-    "..L..WWWW.....",
-    ".....WWWW.....",
-    ".....LWWL.....",
-]
-LEGS_STAND = [".....W..W.....", ".....W..W.....", "....LW..WL...."]
-LEGS_STEP_A = ["....W....W....", "...LW....W....", ".........WL..."]
-LEGS_STEP_B = ["....W....W....", "....W....WL...", "...LW.........."]
-LEGS_FLOAT = [".....F..F.....", "..............", ".............."]
+LEGS_STAND = ["...OWOOSO...", "...OO..OO..."]
+LEGS_WIDE = ["..OWO..OSO..", "..OO....OO.."]
+LEGS_CLOSED = ["....OWSO....", "....OOOO...."]
 PLAYER_DASH = [
-    "..............",
-    "........LWWL..",
-    ".......LWWWWL.",
-    "FF.LLLWWWWWWW.",
-    ".FFLWWWWWWWWL.",
-    "FFLWWWWWWWWW..",
-    ".FFLWWWWWWL...",
-    "FF.LLWWWWL....",
-    "....FF.LL.....",
+    "......OOOO..",
+    "....OOWWWWO.",
+    "..FFOWWWWWLO",
+    ".FF.OWWWWWLO",
+    "FFLLOLWWWLLO",
+    ".FLWWWOLLLO.",
+    "..LWWWWWWLO.",
+    ".FFOWWWWSO..",
+    "...OOOOOO...",
 ]
 
 
 def make_player():
     """Frames: 0-1 idle, 2-5 walk, 6 dash."""
     poses = [
-        (PLAYER_HEAD + ARMS_DOWN + LEGS_STAND, 1),
-        (PLAYER_HEAD + ARMS_DOWN + LEGS_FLOAT, 0),
-        (PLAYER_HEAD + ARMS_SWING_A + LEGS_STEP_A, 0),
-        (PLAYER_HEAD + ARMS_DOWN + LEGS_STAND, 1),
-        (PLAYER_HEAD + ARMS_SWING_B + LEGS_STEP_B, 0),
-        (PLAYER_HEAD + ARMS_DOWN + LEGS_STAND, 1),
-        (PLAYER_DASH, 6),
+        (PLAYER_TOP + LEGS_STAND, 2),
+        (PLAYER_TOP + LEGS_STAND, 3),
+        (PLAYER_TOP + LEGS_WIDE, 2),
+        (PLAYER_TOP + LEGS_CLOSED, 1),
+        (PLAYER_TOP + LEGS_WIDE, 2),
+        (PLAYER_TOP + LEGS_CLOSED, 1),
+        (PLAYER_DASH, 5),
     ]
     sheet = Image.new("RGBA", (PLAYER_FRAME_W * len(poses), PLAYER_FRAME_H), CLEAR)
     for index, (rows, top) in enumerate(poses):
         image = Image.new("RGBA", (PLAYER_FRAME_W, PLAYER_FRAME_H), CLEAR)
-        paint_rows(image, rows, 1, top, LIGHT)
+        paint_rows(image, rows, 2, top, LIGHT)
         sheet.paste(image, (index * PLAYER_FRAME_W, 0))
     return sheet
 
 
 def make_player_glow():
-    size = 40
+    size = 28
     image = Image.new("RGBA", (size, size), CLEAR)
     pixels = image.load()
     for y in range(size):
         for x in range(size):
             distance = math.hypot(x - size / 2, y - size / 2) / (size / 2)
-            strength = max(0.0, 1.0 - distance) ** 1.8
-            pixels[x, y] = (190, 228, 255, int(170 * strength))
+            strength = max(0.0, 1.0 - distance) ** 2
+            pixels[x, y] = (170, 215, 255, int(110 * strength))
     return image
 
+
 def make_player_bullet():
-    image = Image.new("RGBA", (9, 7), CLEAR)
-    rows = ["..FFFFF..", ".FLLLLLF.", "FLWWWWWLF", "FLWWWWWLF", "FLWWWWWLF", ".FLLLLLF.", "..FFFFF.."]
-    paint_rows(image, rows, 0, 0, {"F": (120, 190, 255, 110), "L": (170, 220, 255, 255), "W": (255, 255, 255, 255)})
+    image = Image.new("RGBA", (4, 4), CLEAR)
+    rows = [".LL.", "LWWL", "LWWL", ".LL."]
+    paint_rows(image, rows, 0, 0, {"L": (150, 210, 255, 255), "W": (255, 255, 255, 255)})
     return image
 
 

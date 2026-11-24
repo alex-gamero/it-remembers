@@ -111,7 +111,7 @@ export class Deck {
       maxHealth: PLAYER.maxHealth + this.count('heart'),
       shotDelay: PLAYER.shotDelay * Math.pow(0.72, this.count('overclock')),
       damage: 1 + this.count('bigshot'),
-      bulletScale: 1 + 0.5 * this.count('bigshot'),
+      bulletScale: 1 + 0.6 * this.count('bigshot'),
       sideShots: this.count('split'),
       dashSpeed: PLAYER.dashSpeed * Math.pow(1.3, this.count('longdash')),
       dashCooldown: PLAYER.dashCooldown * Math.pow(0.65, this.count('quickdash')),

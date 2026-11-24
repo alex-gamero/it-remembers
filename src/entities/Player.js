@@ -12,7 +12,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.existing(this);
 
     // Small hitbox around the chest, so near misses feel fair.
-    this.body.setSize(6, 7).setOffset(5, 8);
+    this.body.setSize(6, 6).setOffset(5, 7);
     this.setCollideWorldBounds(true);
 
     this.stats = stats;
@@ -28,10 +28,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.aimAngle = -Math.PI / 2;
     this.lastMove = new Phaser.Math.Vector2(0, -1);
 
-    this.aura = scene.add.image(x, y, 'player_glow').setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.8);
-    // A small orb of light floats where you aim. Shots come out of it.
-    this.orb = scene.add.image(x, y, 'pbullet').setBlendMode(Phaser.BlendModes.ADD);
-    this.shieldRing = scene.add.circle(x, y, 10).setStrokeStyle(1, COLORS.light, 0.9).setVisible(this.shields > 0);
+    this.aura = scene.add.image(x, y, 'player_glow').setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.9);
+    this.shieldRing = scene.add.circle(x, y, 9).setStrokeStyle(1, COLORS.light, 0.9).setVisible(this.shields > 0);
     this.play('player_idle');
   }
 
@@ -86,8 +84,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
   orbPosition() {
     return {
-      x: this.x + Math.cos(this.aimAngle) * 9,
-      y: this.y + Math.sin(this.aimAngle) * 9,
+      x: this.x + Math.cos(this.aimAngle) * 7,
+      y: this.y + 1 + Math.sin(this.aimAngle) * 7,
     };
   }
 
@@ -116,23 +114,17 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.setVelocity(0, 0);
     this.body.enable = false;
     this.anims.stop();
-    this.orb.setVisible(false);
     this.shieldRing.setVisible(false);
     this.scene.tweens.add({ targets: [this, this.aura], alpha: 0, scale: 1.8, duration: 600 });
   }
 
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
-    this.setDepth(this.y + 9);
+    this.setDepth(this.y + 8);
 
     const pulse = 1 + Math.sin(time / 260) * 0.08;
     if (!this.isDead) this.aura.setPosition(this.x, this.y + 1).setScale(pulse);
     this.aura.setDepth(this.depth - 0.5);
-
-    const orb = this.orbPosition();
-    this.orb.setPosition(orb.x, orb.y + Math.sin(time / 180)).setRotation(this.aimAngle);
-    this.orb.setDepth(this.depth + (Math.sin(this.aimAngle) < 0 ? -0.2 : 0.2));
-    this.orb.setVisible(!this.isDead && !this.isDashing);
 
     this.shieldRing.setPosition(this.x, this.y + 1).setDepth(this.depth + 0.3);
     this.shieldRing.setVisible(!this.isDead && this.shields > 0);

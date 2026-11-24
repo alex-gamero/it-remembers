@@ -14,7 +14,7 @@ export default class Boot extends Phaser.Scene {
     this.load.spritesheet('boss_p2', 'boss_p2.png', { frameWidth: 144, frameHeight: 80 });
     this.load.spritesheet('face_p1', 'face_p1.png', { frameWidth: 41, frameHeight: 23 });
     this.load.spritesheet('face_p2', 'face_p2.png', { frameWidth: 41, frameHeight: 23 });
-    this.load.spritesheet('player', 'player.png', { frameWidth: 16, frameHeight: 20 });
+    this.load.spritesheet('player', 'player.png', { frameWidth: 16, frameHeight: 16 });
     this.load.spritesheet('virus', 'virus.png', { frameWidth: 11, frameHeight: 9 });
     this.load.spritesheet('card', 'card.png', { frameWidth: 58, frameHeight: 70 });
     this.load.spritesheet('card_icons', 'card_icons.png', { frameWidth: 16, frameHeight: 16 });
