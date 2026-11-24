@@ -269,85 +269,96 @@ def make_glow():
 
 
 # ---------------------------------------------------------------- player
-PLAYER_FRAME_W, PLAYER_FRAME_H = 16, 18
-HOOD = {
-    "R": (224, 40, 60, 255),     # red cloak
-    "L": (255, 98, 110, 255),    # highlight
-    "D": (140, 20, 38, 255),     # shadow
-    "K": (10, 10, 10, 255),      # the empty face
-    "G": (90, 90, 90, 255),      # boots
+# The player is a being of light: a white figure with no face.
+PLAYER_FRAME_W, PLAYER_FRAME_H = 16, 20
+LIGHT = {
+    "W": (255, 255, 255, 255),
+    "L": (196, 232, 255, 255),   # pale blue edge light
+    "F": (150, 205, 255, 150),   # faint trailing light
 }
-PLAYER_BODY = [
-    "....RRRR....",
-    "...RLLRRR...",
-    "..RLRRRRRD..",
-    "..RRKKKKRD..",
-    "..RKKKKKKD..",
-    "..RKKKKKKD..",
-    "..RRKKKKRD..",
-    "...RRRRRD...",
-    "..RRRRRRRD..",
-    ".RRRRRRRRRD.",
-    ".RLRRRRRRDD.",
-    ".RRRRRRRRDD.",
-    "..RRDRRDRD..",
+PLAYER_HEAD = [
+    ".....LWWL.....",
+    "....LWWWWL....",
+    "....WWWWWW....",
+    "....LWWWWL....",
+    ".....LWWL.....",
+    "......WW......",
 ]
-LEGS_BOTH = "...GG..GG..."
-LEGS_LEFT = "...GG......."
-LEGS_RIGHT = ".......GG..."
+ARMS_DOWN = [
+    "...LWWWWWWL...",
+    "..LW.WWWW.WL..",
+    "..W..WWWW..W..",
+    "..L..WWWW..L..",
+    ".....WWWW.....",
+    ".....LWWL.....",
+]
+ARMS_SWING_A = [
+    "...LWWWWWWL...",
+    "..WW.WWWW.WL..",
+    ".LW..WWWW..W..",
+    ".....WWWW..L..",
+    ".....WWWW.....",
+    ".....LWWL.....",
+]
+ARMS_SWING_B = [
+    "...LWWWWWWL...",
+    "..LW.WWWW.WW..",
+    "..W..WWWW..WL.",
+    "..L..WWWW.....",
+    ".....WWWW.....",
+    ".....LWWL.....",
+]
+LEGS_STAND = [".....W..W.....", ".....W..W.....", "....LW..WL...."]
+LEGS_STEP_A = ["....W....W....", "...LW....W....", ".........WL..."]
+LEGS_STEP_B = ["....W....W....", "....W....WL...", "...LW.........."]
+LEGS_FLOAT = [".....F..F.....", "..............", ".............."]
 PLAYER_DASH = [
-    "......RRRR..",
-    ".....RLLRRR.",
-    "....RLRRRRRD",
-    "....RRKKKKRD",
-    "...RRKKKKKKD",
-    "...RRKKKKKKD",
-    "..RRRRKKKKRD",
-    "..RRRRRRRRD.",
-    ".RRRRRRRRRD.",
-    "RRLRRRRRRD..",
-    "RRRRRRRDD...",
-    ".RDRRDRD....",
-    "..D..D......",
+    "..............",
+    "........LWWL..",
+    ".......LWWWWL.",
+    "FF.LLLWWWWWWW.",
+    ".FFLWWWWWWWWL.",
+    "FFLWWWWWWWWW..",
+    ".FFLWWWWWWL...",
+    "FF.LLWWWWL....",
+    "....FF.LL.....",
 ]
 
 
 def make_player():
     """Frames: 0-1 idle, 2-5 walk, 6 dash."""
-    white = (255, 255, 255, 255)
     poses = [
-        (PLAYER_BODY + [LEGS_BOTH], 0),
-        (PLAYER_BODY + [LEGS_BOTH], 1),
-        (PLAYER_BODY + [LEGS_LEFT], -1),
-        (PLAYER_BODY + [LEGS_BOTH], 0),
-        (PLAYER_BODY + [LEGS_RIGHT], -1),
-        (PLAYER_BODY + [LEGS_BOTH], 0),
-        (PLAYER_DASH, 1),
+        (PLAYER_HEAD + ARMS_DOWN + LEGS_STAND, 1),
+        (PLAYER_HEAD + ARMS_DOWN + LEGS_FLOAT, 0),
+        (PLAYER_HEAD + ARMS_SWING_A + LEGS_STEP_A, 0),
+        (PLAYER_HEAD + ARMS_DOWN + LEGS_STAND, 1),
+        (PLAYER_HEAD + ARMS_SWING_B + LEGS_STEP_B, 0),
+        (PLAYER_HEAD + ARMS_DOWN + LEGS_STAND, 1),
+        (PLAYER_DASH, 6),
     ]
     sheet = Image.new("RGBA", (PLAYER_FRAME_W * len(poses), PLAYER_FRAME_H), CLEAR)
-    for index, (rows, bob) in enumerate(poses):
+    for index, (rows, top) in enumerate(poses):
         image = Image.new("RGBA", (PLAYER_FRAME_W, PLAYER_FRAME_H), CLEAR)
-        paint_rows(image, rows, 2, 2 + bob, HOOD)
-        sheet.paste(add_outline(image, white), (index * PLAYER_FRAME_W, 0))
+        paint_rows(image, rows, 1, top, LIGHT)
+        sheet.paste(image, (index * PLAYER_FRAME_W, 0))
     return sheet
 
 
-def make_gun():
-    image = Image.new("RGBA", (10, 6), CLEAR)
-    rows = [
-        ".WWWWWWW.",
-        ".WWWWWWWW",
-        ".GGW.....",
-        ".GG......",
-    ]
-    paint_rows(image, rows, 0, 1, {"W": (230, 230, 230, 255), "G": (140, 140, 140, 255)})
+def make_player_glow():
+    size = 40
+    image = Image.new("RGBA", (size, size), CLEAR)
+    pixels = image.load()
+    for y in range(size):
+        for x in range(size):
+            distance = math.hypot(x - size / 2, y - size / 2) / (size / 2)
+            strength = max(0.0, 1.0 - distance) ** 1.8
+            pixels[x, y] = (190, 228, 255, int(170 * strength))
     return image
 
-
 def make_player_bullet():
-    image = Image.new("RGBA", (6, 4), CLEAR)
-    rows = [".YYYY.", "YWWWWY", "YWWWWY", ".YYYY."]
-    paint_rows(image, rows, 0, 0, {"Y": (255, 214, 120, 255), "W": (255, 250, 230, 255)})
+    image = Image.new("RGBA", (9, 7), CLEAR)
+    rows = ["..FFFFF..", ".FLLLLLF.", "FLWWWWWLF", "FLWWWWWLF", "FLWWWWWLF", ".FLLLLLF.", "..FFFFF.."]
+    paint_rows(image, rows, 0, 0, {"F": (120, 190, 255, 110), "L": (170, 220, 255, 255), "W": (255, 255, 255, 255)})
     return image
 
 
@@ -387,6 +398,83 @@ def make_spark():
     return image
 
 
+# ---------------------------------------------------------------- attack sprites
+def make_virus():
+    """Two frames of a small red virus that chases you."""
+    frames = [
+        ["X.X.X.X", ".XXXXX.", "XXWXWXX", ".XXXXX.", "XX.X.XX", "X.....X"],
+        [".X.X.X.", "XXXXXXX", ".XWXWX.", "XXXXXXX", ".X.X.X.", "X.X.X.X"],
+    ]
+    sheet = Image.new("RGBA", (22, 9), CLEAR)
+    for index, rows in enumerate(frames):
+        image = Image.new("RGBA", (11, 9), CLEAR)
+        paint_rows(image, rows, 2, 1, {"X": (255, 43, 61, 255), "W": (255, 255, 255, 255)})
+        sheet.paste(add_outline(image, (20, 0, 4, 255)), (index * 11, 0))
+    return sheet
+
+
+def make_popup():
+    """An 'error' window that falls from the sky."""
+    width, height = 34, 24
+    image = Image.new("RGBA", (width, height), CLEAR)
+    draw = ImageDraw.Draw(image)
+    draw.rectangle([0, 0, width - 1, height - 1], fill=(20, 20, 20, 255), outline=(255, 255, 255, 255))
+    draw.rectangle([1, 1, width - 2, 6], fill=(255, 43, 61, 255))
+    draw.rectangle([width - 7, 2, width - 3, 5], fill=(255, 255, 255, 255))
+    draw.line([(width - 6, 3), (width - 4, 4)], fill=(255, 43, 61, 255))
+    draw.line([(width - 6, 4), (width - 4, 3)], fill=(255, 43, 61, 255))
+    # warning triangle with an exclamation mark
+    draw.polygon([(8, 19), (13, 9), (18, 19)], fill=(255, 255, 255, 255))
+    draw.line([(13, 12), (13, 15)], fill=(20, 20, 20, 255))
+    draw.point((13, 17), fill=(20, 20, 20, 255))
+    for line_y in (11, 14, 17):
+        draw.line([(21, line_y), (21 + (9 if line_y != 17 else 5), line_y)], fill=(140, 140, 140, 255))
+    return image
+
+
+# ---------------------------------------------------------------- cards
+CARD_W, CARD_H = 58, 70
+CARD_ICONS = {
+    "heart": ["................", "...XXX....XXX...", "..XXXXX..XXXXX..", ".XXWXXXXXXXXXXX.", ".XWXXXXXXXXXXXX.", ".XXXXXXXXXXXXXX.", "..XXXXXXXXXXXX..", "...XXXXXXXXXX...", "....XXXXXXXX....", ".....XXXXXX.....", "......XXXX......", ".......XX......."],
+    "overclock": [".........XXX....", "........XXX.....", ".......XXX......", "......XXX.......", ".....XXXXXXX....", "....XXXXXXX.....", ".......XXX......", "......XXX.......", ".....XXX........", "....XX..........", "...X............"],
+    "bigshot": ["......XXXX......", "....XXXXXXXX....", "...XXWWXXXXXX...", "..XXWXXXXXXXXX..", "..XXXXXXXXXXXX..", "..XXXXXXXXXXXX..", "..XXXXXXXXXXXX..", "...XXXXXXXXXX...", "....XXXXXXXX....", "......XXXX......"],
+    "split": ["XX............XX", "XX............XX", "..X..........X..", "...X...XX...X...", "....X..XX..X....", ".....X.XX.X.....", "......XXXX......", "......XXXX......", ".......XX.......", ".......XX.......", ".......XX......."],
+    "longdash": ["................", "................", "..........X.....", "..........XX....", "XX.XX.XXXXXXX...", "XX.XX.XXXXXXXX..", "..........XX....", "..........X....."],
+    "quickdash": ["................", "..X.....X.......", "..XX....XX......", "...XX....XX.....", "....XX....XX....", "....XX....XX....", "...XX....XX.....", "..XX....XX......", "..X.....X......."],
+    "firewall": ["..XXXXXXXXXXXX..", "..XWWWWWWWWWWX..", "..XWXXXXXXXXWX..", "..XWXXXXXXXXWX..", "..XWXXXXXXXXWX..", "...XWXXXXXXWX...", "...XWXXXXXXWX...", "....XWXXXXWX....", ".....XWXXWX.....", "......XWWX......", ".......XX......."],
+    "shockwave": ["......X..X......", "...X........X...", "................", ".X............X.", "......XXXX......", "X....XXXXXX....X", "X....XXXXXX....X", "......XXXX......", ".X............X.", "................", "...X........X...", "......X..X......"],
+    "gamble": ["..XXXXXXXXXXXX..", ".XWWWWWWWWWWWWX.", ".XWXXWWWWWWXXWX.", ".XWXXWWWWWWXXWX.", ".XWWWWWWWWWWWWX.", ".XWWWWWXXWWWWWX.", ".XWWWWWXXWWWWWX.", ".XWWWWWWWWWWWWX.", ".XWXXWWWWWWXXWX.", ".XWXXWWWWWWXXWX.", ".XWWWWWWWWWWWWX.", "..XXXXXXXXXXXX.."],
+}
+CARD_ORDER = ["heart", "overclock", "bigshot", "split", "longdash", "quickdash", "firewall", "shockwave", "gamble"]
+
+
+def make_cards():
+    """Frame 0 is a normal card, frame 1 is the red gamble card. Icons are a separate sheet."""
+    sheet = Image.new("RGBA", (CARD_W * 2, CARD_H), CLEAR)
+    for index, (edge, inner) in enumerate([((255, 255, 255, 255), (140, 140, 140, 255)), ((255, 43, 61, 255), (98, 9, 28, 255))]):
+        image = Image.new("RGBA", (CARD_W, CARD_H), CLEAR)
+        draw = ImageDraw.Draw(image)
+        draw.rectangle([0, 0, CARD_W - 1, CARD_H - 1], fill=(12, 12, 12, 255), outline=edge)
+        draw.rectangle([2, 2, CARD_W - 3, CARD_H - 3], outline=inner)
+        for corner_x, corner_y in [(4, 4), (CARD_W - 6, 4), (4, CARD_H - 6), (CARD_W - 6, CARD_H - 6)]:
+            draw.rectangle([corner_x, corner_y, corner_x + 1, corner_y + 1], fill=edge)
+        sheet.paste(image, (index * CARD_W, 0))
+    return sheet
+
+
+def make_card_icons():
+    icons = Image.new("RGBA", (16 * len(CARD_ORDER), 16), CLEAR)
+    for index, name in enumerate(CARD_ORDER):
+        rows = CARD_ICONS[name]
+        top = (16 - len(rows)) // 2
+        color = (255, 43, 61, 255) if name in ("heart", "gamble") else (255, 255, 255, 255)
+        inner = (255, 255, 255, 255) if name in ("heart", "gamble") else (255, 43, 61, 255)
+        image = Image.new("RGBA", (16, 16), CLEAR)
+        paint_rows(image, rows, 0, top, {"X": color, "W": inner})
+        icons.paste(image, (index * 16, 0))
+    return icons
+
+
 if __name__ == "__main__":
     for name in PHASES:
         save(make_room(name), f"room_{name}.png")
@@ -395,7 +483,11 @@ if __name__ == "__main__":
     save(make_shadow(), "shadow.png")
     save(make_glow(), "glow.png")
     save(make_player(), "player.png")
-    save(make_gun(), "gun.png")
+    save(make_player_glow(), "player_glow.png")
+    save(make_virus(), "virus.png")
+    save(make_popup(), "popup.png")
+    save(make_cards(), "card.png")
+    save(make_card_icons(), "card_icons.png")
     save(make_player_bullet(), "pbullet.png")
     save(make_bits(), "bits.png")
     save(make_hearts(), "hearts.png")

@@ -3,6 +3,7 @@ import { SCREEN } from './config.js';
 import Boot from './scenes/Boot.js';
 import Game from './scenes/Game.js';
 import Hud from './scenes/Hud.js';
+import Cards from './scenes/Cards.js';
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,
@@ -20,7 +21,7 @@ const game = new Phaser.Game({
     default: 'arcade',
     arcade: { debug: false },
   },
-  scene: [Boot, Game, Hud],
+  scene: [Boot, Game, Hud, Cards],
 });
 
 // Lets you poke at the game from the browser console while testing.

@@ -1,3 +1,5 @@
+import { forgetDeck } from './Deck.js';
+
 // Saves how the player plays, so the boss can remember it next run.
 // Everything stays in this browser (localStorage). Nothing is sent anywhere.
 
@@ -97,6 +99,7 @@ if (typeof window !== 'undefined') {
     } catch (error) {
       // Ignore.
     }
-    console.log('Memory wiped. Reload the page.');
+    forgetDeck();
+    console.log('Memory and cards wiped. Reload the page.');
   };
 }

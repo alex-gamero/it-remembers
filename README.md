@@ -41,15 +41,39 @@ To make the version that goes on itch.io, run `npm run build` and zip what's ins
 
 ## Controls
 
+Made for laptops. No mouse needed.
+
 | Action | Keys |
 |---|---|
-| Move | WASD or arrow keys |
-| Aim | Mouse |
-| Shoot | Left click (hold it) |
-| Dash | Space, Shift or right click |
-| Try again | R |
+| Move | WASD |
+| Shoot | Arrow keys (hold two for diagonals) |
+| Dash | Space or Shift |
+| Pick a card | Arrow keys, then Space |
 
-You can't be hit while dashing.
+You can't be hit while dashing. A mouse also works: left click shoots where you point, right click dashes.
+
+## The boss
+
+The Machine has 10 attacks. The ones marked (AI) use what it learned about how you dodge.
+
+| Attack | What it does |
+|---|---|
+| Predict (AI) | Marks where you'll dodge, shoots at you to make you move, then fires into the mark |
+| Cable slam (AI) | Cables smash the floor where you are and where you'll dodge |
+| Firewall (AI) | A wall of bits with one gap, on the side you never go |
+| Ram (AI) | Charges at where you'll dodge, then gets dizzy. Hit it then for extra damage |
+| Laser scan (AI) | Two beams that sweep toward your favorite dodge. Phase 2 only |
+| Error popups (AI) | Windows fall on you and where you'll dodge. Phase 2 only |
+| Viruses | Little bugs that chase you. Shoot them. Phase 2 only |
+| Ring, fan, spiral | Classic bullet patterns |
+
+At half health it enters phase 2: the room turns red and it gets faster and meaner.
+
+## Upgrade cards
+
+Every time you die you pick 1 of 3 random cards. Cards stack until you beat the boss.
+
+Extra Life, Overclock, Big Shot, Split Shot, Long Dash, Quick Dash, Firewall, Shockwave, and `???`: 50% you get two random cards, 50% you start the next run with one heart less.
 
 ## Where things are
 
@@ -57,15 +81,17 @@ You can't be hit while dashing.
 |---|---|
 | `src/config.js` | Every number you might want to tweak: speeds, health, timings |
 | `src/scenes/Game.js` | The fight: room, bullets, hits, camera |
-| `src/scenes/Hud.js` | Hearts, boss bar, messages |
+| `src/scenes/Hud.js` | Hearts, cards, boss bar, messages |
+| `src/scenes/Cards.js` | The pick-a-card screen after you die |
 | `src/entities/Player.js` | Moving, dashing, shooting |
-| `src/entities/Boss.js` | Boss movement, attacks, both phases |
+| `src/entities/Boss.js` | Boss movement, all attacks, both phases |
+| `src/systems/Deck.js` | The upgrade cards and what each one does |
 | `src/systems/Recorder.js` | Saves how you play in the browser |
 | `src/systems/Predictor.js` | Guesses your next dash. The TensorFlow.js model goes here |
 | `src/lines.js` | Boss lines for when Gemini isn't available |
 | `tools/make_sprites.py` | Draws every sprite. Run it again after changing a color or shape |
 
-To wipe what the boss remembers, open the browser console and type `forgetEverything()`.
+To wipe what the boss remembers and your cards, open the browser console and type `forgetEverything()`.
 
 ## Status
 
@@ -74,8 +100,7 @@ To wipe what the boss remembers, open the browser console and type `forgetEveryt
 - [x] Recording player moves
 - [ ] Prediction model (right now the boss just counts your dashes)
 - [ ] Boss dialogue with Gemini (right now it uses the fallback lines)
-- [ ] Upgrade cards
-- [ ] Touch controls for phones
+- [x] Upgrade cards
 - [ ] Publish on itch.io
 
 ## Team
